@@ -1,12 +1,9 @@
 ﻿<Window x:Class="TournoisPlanning.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TournoisPlanning"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="Tournoi Élimination" Height="600" Width="1000">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <!--<Canvas x:Name="TournamentCanvas" Background="White"/>-->
+        <Button x:Name="StartDashBoard" Click="StartDashBoard_Click">Dashboard</Button>
+    </ScrollViewer>
 </Window>
