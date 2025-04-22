@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using TournoisPlanning;
 using TournoisPlanning.Views;
@@ -36,16 +37,22 @@ namespace TournoisPlanning.ViewModels
 
         public TournoiDetailsViewModel(Tournoi tournoi)
         {
+            RootMatches = new ObservableCollection<Match>();
+            //MessageBox.Show(tournoi.Statut);
             if (tournoi.Statut == "Terminé")
             {
                 MatchView = new VainqueurView(tournoi);
-                //SectionView = new StatistiquesTournoiView(tournoi);
+                SectionView = new ArbreTournoiView(tournoi);
             }
             else
             {
                 var matchActuel = tournoi.GetMatchEnCours();
                 MatchView = matchActuel != null ? new MatchEnCoursView(matchActuel) : new ProchainMatchView(tournoi.GetProchainMatch());
                 SectionView = new ArbreTournoiView(tournoi);
+            }
+            foreach (var match in tournoi.Matches)
+            {
+                RootMatches.Add(match);
             }
         }
 

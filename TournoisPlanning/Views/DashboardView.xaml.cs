@@ -32,11 +32,22 @@ namespace TournoisPlanning.Views
         {
             InitializeComponent();
             Tournois = new ObservableCollection<Tournoi>
-            {
-                new Tournoi { Nom = "Coupe ENSPD", Type = "Élimination directe", NombreEquipes = 16, Statut = "En cours" },
-                new Tournoi { Nom = "Championnat Réseau", Type = "Poules", NombreEquipes = 8, Statut = "En attente" },
-                new Tournoi { Nom = "Tournoi Dev", Type = "Élimination directe", NombreEquipes = 12, Statut = "Terminé" }
-            };
+                {
+                    new Tournoi { Nom = "Coupe ENSPD", Type = "Élimination directe", NombreEquipes = 16, Statut = "En cours", Matches = new List<Match>(){
+                            new Match { Equipe1 = "GIT", Equipe2 = "GRT", Statut = "En cours", ScoreEquipe1 = 0, ScoreEquipe2 = 0 },
+                            new Match { Equipe1 = "GESI", Equipe2 = "GCI", Statut = "En cours", ScoreEquipe1 = 0, ScoreEquipe2 = 0 },
+                            new Match { Equipe1 = "Medecine", Equipe2 = "Petrochimie", Statut = "En cours", ScoreEquipe1 = 0, ScoreEquipe2 = 0 },
+                            new Match { Equipe1 = "Alternance", Equipe2 = "Prof", Statut = "En cours", ScoreEquipe1 = 0, ScoreEquipe2 = 0 },
+                        }
+                    },
+                    new Tournoi { Nom = "Championnat Réseau", Type = "Poules", NombreEquipes = 8, Statut = "En attente", Matches = new List<Match>(){
+                            new Match { Equipe1 = "GRT3", Equipe2 = "GRT4", Statut = "En cours", ScoreEquipe1 = 0, ScoreEquipe2 = 0 },
+                        }
+                    },
+                    new Tournoi { Nom = "Tournoi Dev", Type = "Élimination directe", NombreEquipes = 12, Statut = "Terminé", Matches = new List<Match>(){
+                            new Match {Equipe1 = "GLO3", Equipe2 = "GLO4", Statut = "En cours", ScoreEquipe1 = 0, ScoreEquipe2 = 0},
+                        } }
+                };
             DataContext = this;
             InitializeGraphs();
         }

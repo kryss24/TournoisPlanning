@@ -3,17 +3,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using MySql.Data.MySqlClient;
 using TournoisPlanning;
+using TournoisPlanning.Config;
 
 namespace TournoisPlanning
 {
     public partial class MainWindow : Window
     {
         //private TournamentManager manager;
+        DBConn db = new DBConn("127.0.0.1", "adminTM", "firstproject", "tournoisManagement");
 
         public MainWindow()
         {
             InitializeComponent();
+            db.OpenConnection();
             //manager = new TournamentManager();
             //DrawTournament(manager.RootMatches);
         }
@@ -22,6 +26,12 @@ namespace TournoisPlanning
         {
             var dashboard = new Dashboard();
             dashboard.Show();
+            //string query = "SELECT * FROM equipe";
+            //MySqlDataReader reader = db.ExecuteReader(query);
+            //while (reader.Read())
+            //{
+            //    MessageBox.Show(reader["Nom"].ToString());
+            //}
         }
 
         //private void DrawTournament(List<Match> matchesPremierTour)
