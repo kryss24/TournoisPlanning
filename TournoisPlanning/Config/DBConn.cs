@@ -49,5 +49,16 @@ namespace TournoisPlanning.Config
             MySqlCommand commamd = new MySqlCommand(query, connection);
             return commamd.ExecuteScalar();
         }
+
+        public int VerifiedUser(string username, string password)
+        {
+            string query = "SELECT COUNT(*) FROM users WHERE Username=@username AND Password=@password";
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count;
+        }
     }
 }

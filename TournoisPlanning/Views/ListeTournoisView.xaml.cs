@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TournoisPlanning.ViewModels;
 using TournoisPlanning.Views;
+using TournoisPlanning.Models;
 
 namespace TournoisPlanning.Views
 {

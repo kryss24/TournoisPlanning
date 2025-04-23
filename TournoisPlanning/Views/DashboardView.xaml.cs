@@ -15,8 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OxyPlot.Series;
 using OxyPlot;
-using TournoisPlanning;
 using TournoisPlanning.Views;
+using TournoisPlanning.Models;
 
 namespace TournoisPlanning.Views
 {

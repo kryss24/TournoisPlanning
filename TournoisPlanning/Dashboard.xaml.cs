@@ -1,12 +1,13 @@
-﻿    using System.Collections.ObjectModel;
-    using System.Windows;
-    using System.Windows.Controls;
-    using OxyPlot; // Ensure this namespace is included
-    using OxyPlot.Series; // Ensure this namespace is included
-    using TournoisPlanning;
-    using TournoisPlanning.Views;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using OxyPlot; // Ensure this namespace is included
+using OxyPlot.Series; // Ensure this namespace is included
+using TournoisPlanning.Models;
+using TournoisPlanning.Views;
 
-    namespace TournoisPlanning
+namespace TournoisPlanning
     {
         public partial class Dashboard : Window
         {
@@ -66,6 +67,19 @@
             {
                 //MainContentArea.Content = new GestionEquipesView();
             }
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                DragMove();
         }
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+    }
 
     }

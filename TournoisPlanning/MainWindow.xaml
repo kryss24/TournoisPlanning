@@ -1,9 +1,147 @@
 ﻿<Window x:Class="TournoisPlanning.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Tournoi Élimination" Height="600" Width="1000">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <!--<Canvas x:Name="TournamentCanvas" Background="White"/>-->
-        <Button x:Name="StartDashBoard" Click="StartDashBoard_Click">Dashboard</Button>
-    </ScrollViewer>
+        Title="Tournoi Élimination" 
+        Height="550" 
+        Width="800"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="Window_MouseDown">
+
+    <!-- Effet de flou derrière la fenêtre (Windows 10+) -->
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CaretBrush" Value="LightGray"/>
+            <Setter Property="BorderBrush" Value="#555"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="20,0,0,5"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#28AEED"/>
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#DA34AE"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="12">
+        <Border.Background>
+            <ImageBrush ImageSource="/Images/back-image.jpg" Stretch="UniformToFill" Opacity="0.7"/>
+        </Border.Background>
+
+        <!-- Conteneur principal avec bordure animée -->
+        <Border CornerRadius="10" BorderThickness="3" Opacity="0.92">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#28b4f8" Offset="0"/>
+                    <GradientStop Color="#1b4c9a" Offset="0.5"/>
+                    <GradientStop Color="#1b71dc" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Color="#141d25" Offset="0"/>
+                    <GradientStop Color="#142c4b" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <!-- Animation de la bordure -->
+            <Border.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever" AutoReverse="True" Duration="0:0:8">
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="BorderBrush.(LinearGradientBrush.GradientStops)[1].Color"
+                                From="#DA34AE" To="#28AEED" Duration="0:0:4"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Border.Triggers>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!-- Barre de titre améliorée -->
+                <Border Grid.Row="0" Background="Transparent" CornerRadius="10,10,0,0">
+                    <Grid>
+                        <TextBlock Text="TOURNOI LOGIN" 
+                                   Foreground="White"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   FontFamily="Montserrat"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Opacity="0.9"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                            <Button x:Name="btnMinimise" Style="{StaticResource CircleButton}" 
+                                    Content="─" Background="#28AEED" Click="btnMinimize_Click"/>
+
+                            <Button x:Name="btnClose" Style="{StaticResource CircleButton}" 
+                                    Content="✕" Background="#FF5555" Margin="5,0,0,0" Click="btnClose_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Contenu du formulaire -->
+                <StackPanel Grid.Row="1" Width="300" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Source="/Images/logo.png" Width="80" Height="80" Margin="0,0,0,20"/>
+
+                    <TextBlock Text="Welcome to Tournament" 
+                               Foreground="White"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,30"/>
+
+                    <!-- Champ Username avec icône intégrée -->
+                    <StackPanel>
+                        <TextBlock Text="Username" Style="{StaticResource InputLabel}"/>
+                        <Grid>
+                            <TextBox x:Name="txtUser" Style="{StaticResource ModernTextBox}" 
+                                     Tag="Enter username"/>
+                            <Image Source="/Images/user-icon.png" 
+                                   Width="16" 
+                                   Height="16" 
+                                   HorizontalAlignment="Left" 
+                                   VerticalAlignment="Center" 
+                                   Margin="5,0,0,0"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Champ Password avec icône intégrée -->
+                    <StackPanel Margin="0,15,0,0">
+                        <TextBlock Text="Password" Style="{StaticResource InputLabel}"/>
+                        <Grid>
+                            <PasswordBox x:Name="txtPass" Style="{StaticResource ModernPasswordBox}" 
+                                        Tag="Enter password"/>
+                            <Image Source="/Images/key-icon.png" Width="16" Height="16" 
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Bouton Login avec effet de vague au survol -->
+                    <Button x:Name="btnLogin" Content="LOG IN" Style="{StaticResource GradientButton}" 
+                            Margin="0,40,0,15" Click="btnLogin_Click"/>
+
+                    <!-- Lien "Forgot Password" -->
+                    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="#AAA" Cursor="Hand">
+                        <Underline>Forgot Password?</Underline>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Border>
 </Window>
