@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppInstaller
+	Uri="file:///C:/Users/mrngu/AppPackages/WapProjTM.appinstaller"
+	Version="1.0.3.0" xmlns="http://schemas.microsoft.com/appx/appinstaller/2017/2">
+	<MainBundle
+		Name="2919cdd8-f98c-4fa0-a750-e0b4457642aa"
+		Version="1.0.3.0"
+		Publisher="CN=Root"
+		Uri="file:///C:/Users/mrngu/AppPackages/WapProjTM_1.0.3.0_Debug_Test/WapProjTM_1.0.3.0_x86_Debug.msixbundle" />
+	<UpdateSettings>
+		<OnLaunch
+			HoursBetweenUpdateChecks="72" />
+	</UpdateSettings>
+</AppInstaller>
