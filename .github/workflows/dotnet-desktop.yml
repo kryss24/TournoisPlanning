@@ -71,10 +71,16 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    - name: Setup MSBuild and Visual Studio
+    - name: Setup Visual Studio Build Tools with Desktop Bridge support
       uses: microsoft/setup-msbuild@v2
       with:
         vs-version: '[17.0,18.0]'
+    
+    - name: Install required Visual Studio workloads
+      run: |
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC --add Microsoft.VisualStudio.ComponentGroup.UWP.Support --includeRecommended --passive --norestart"
+      shell: powershell
+
 
     - name: Restore .NET Workloads
       run: dotnet workload restore
