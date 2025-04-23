@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using TournoisPlanning;
+using TournoisPlanning.Models;
 using TournoisPlanning.ViewModels;
 
 namespace TournoisPlanning.Views

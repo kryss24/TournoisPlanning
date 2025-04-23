@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using TournoisPlanning;
+using TournoisPlanning.Models;
 using TournoisPlanning.Views;
 
 namespace TournoisPlanning.ViewModels

@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace TournoisPlanning
+namespace TournoisPlanning.Models
 {
     //public class Match
     //{
