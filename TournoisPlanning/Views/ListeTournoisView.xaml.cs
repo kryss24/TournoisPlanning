@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TournoisPlanning.ViewModels;
+using TournoisPlanning.Views;
+using TournoisPlanning.Models;
 
 namespace TournoisPlanning.Views
 {
@@ -30,8 +33,26 @@ namespace TournoisPlanning.Views
             var button = sender as Button;
             if (button?.Tag is Tournoi tournoi)
             {
+                // L'événement est toujours déclenché pour d'autres logiques, mais dans ce cas nous affichons le détail
                 TournoiSelected?.Invoke(tournoi);
+
+                // Obtenez une instance du TournoiDetailsPanel
+                var tournoiDetailsPanel = new TournoiDetailsPanel();
+
+                // Affectez le DataContext pour lier les données du tournoi au contrôle
+                //tournoiDetailsPanel.DataContext = tournoi;
+                tournoiDetailsPanel.SetTournoi(tournoi);
+
+                // Supposons que vous avez un ContentControl pour afficher le détail dans votre fenêtre parent
+                // Exemple : "ContentControlArea" dans le XAML parent
+                var parentWindow = Window.GetWindow(this);
+                if (parentWindow is Dashboard dashboard)
+                {
+                    //tournoiDetailsPanel.SetTournoi(tournoi);    
+                    dashboard.MainContentArea.Content = tournoiDetailsPanel;
+                }
             }
         }
+
     }
 }

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace TournoisPlanning
+namespace TournoisPlanning.Models
 {
     public class Tournoi
     {
+        public int Id { get; set; }
         public string Nom { get; set; }
         public string Type { get; set; } // Exemple : "Élimination directe", "Poules"
         public int NombreEquipes { get; set; }
@@ -28,4 +28,5 @@ namespace TournoisPlanning
             return Matches.FirstOrDefault(m => m.Statut == "À venir");
         }
     }
+
 }

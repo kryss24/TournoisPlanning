@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TournoisPlanning.ViewModels;
+using TournoisPlanning.Views;
+using TournoisPlanning.Models;
 
 namespace TournoisPlanning.Views
 {
@@ -23,6 +26,11 @@ namespace TournoisPlanning.Views
         public TournoiDetailsPanel()
         {
             InitializeComponent();
+        }
+        public void SetTournoi(Tournoi tournoi)
+        {
+            // Définir le DataContext à une instance de TournoiDetailsViewModel
+            DataContext = new TournoiDetailsViewModel(tournoi);
         }
     }
 }

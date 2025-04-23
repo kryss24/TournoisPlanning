@@ -2,33 +2,58 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:oxy="http://oxyplot.org/wpf"
-        Title="Dashboard" Height="600" Width="1000">
+        WindowStyle="none"
+        Title="Dashboard"
+        Height="600" 
+        Width="1000"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="Window_MouseDown"
+        WindowState="Maximized">
     <Grid>
-        <!-- Sidebar -->
-        <Grid Background="#2D2D30" Width="200" VerticalAlignment="Stretch" HorizontalAlignment="Left">
-            <StackPanel Margin="0,30,0,0">
-                <TextBlock Text="🏟 Tournoi Manager" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-                <Button Content="🏠 Dashboard" Margin="10,5" Height="40" Foreground="White" Background="Transparent" BorderBrush="Transparent" HorizontalContentAlignment="Left" Click="Dashboard_Click"/>
-                <Button Content="🎮 Tournois" Margin="10,5" Height="40" Foreground="White" Background="Transparent" BorderBrush="Transparent" HorizontalContentAlignment="Left" Click="Tournois_Click"/>
-                <Button Content="📅 Calendrier" Margin="10,5" Height="40" Foreground="White" Background="Transparent" BorderBrush="Transparent" HorizontalContentAlignment="Left" Click="Calandrier_Click"/>
-            </StackPanel>
-        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="Transparent" CornerRadius="10,10,0,0">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                    <Button x:Name="btnMinimise" Style="{StaticResource CircleButton}" 
+                    Content="─" Background="#28AEED" Click="btnMinimize_Click"/>
 
-        <!-- Main content -->
-        <Grid Margin="200,0,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+                    <Button x:Name="btnClose" Style="{StaticResource CircleButton}" 
+                    Content="✕" Background="#FF5555" Margin="5,0,0,0" Click="btnClose_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="1">
+            <!-- Sidebar -->
+            <Grid Background="#2D2D30" Width="200" VerticalAlignment="Stretch" HorizontalAlignment="Left">
+                <StackPanel Margin="0,30,0,0">
+                    <TextBlock Text="🏟 Tournoi Manager" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <Button Content="🏠 Dashboard" Margin="10,5" Height="40" Foreground="White" Background="Transparent" BorderBrush="Transparent" HorizontalContentAlignment="Left" Click="Dashboard_Click"/>
+                    <Button Content="🎮 Tournois" Margin="10,5" Height="40" Foreground="White" Background="Transparent" BorderBrush="Transparent" HorizontalContentAlignment="Left" Click="Tournois_Click"/>
+                    <Button Content="📅 Calendrier" Margin="10,5" Height="40" Foreground="White" Background="Transparent" BorderBrush="Transparent" HorizontalContentAlignment="Left" Click="Calandrier_Click"/>
+                </StackPanel>
+            </Grid>
 
-            <!-- Titre -->
-            <TextBlock Text="Mes Tournois" FontSize="22" FontWeight="Bold" Margin="20,10,0,10"/>
+            <!-- Main content -->
+            <Grid Margin="200,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- Contenu dynamique -->
-            <ContentControl Grid.Row="1" x:Name="MainContentArea">
-             
-            </ContentControl>
-        
+                <!-- Titre -->
+                <TextBlock Text="Mes Tournois" FontSize="22" FontWeight="Bold" Margin="20,10,0,10"/>
+
+                <!-- Contenu dynamique -->
+                <ContentControl Grid.Row="1" x:Name="MainContentArea">
+
+                </ContentControl>
+
+            </Grid>
         </Grid>
     </Grid>
 </Window>
