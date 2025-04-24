@@ -76,10 +76,15 @@ jobs:
       with:
         vs-version: '[17.0,18.0]'
     
-    - name: Install required Visual Studio workloads
+    - name: Install required Visual Studio workloads for WAP
       run: |
-        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC --add Microsoft.VisualStudio.ComponentGroup.UWP.Support --includeRecommended --passive --norestart"
+        choco install visualstudio2022buildtools --yes `
+          --execution-timeout=7200 `
+          --timeout=3600 `
+          --no-progress `
+          --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC --add Microsoft.VisualStudio.ComponentGroup.UWP.Support --includeRecommended --passive --norestart"
       shell: powershell
+
 
 
     - name: Restore .NET Workloads
