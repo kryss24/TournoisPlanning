@@ -37,6 +37,9 @@ jobs:
 
     - name: Restore NuGet packages
       run: nuget restore ${{ env.Solution_Name }}
+    - name: Restore .NET project dependencies
+      run: dotnet restore ${{ env.Solution_Name }} --runtime win-x86
+
 
     - name: Build Solution
       run: msbuild ${{ env.Solution_Name }} /p:Configuration=Release
