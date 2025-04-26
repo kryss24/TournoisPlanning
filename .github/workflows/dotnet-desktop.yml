@@ -1,4 +1,4 @@
-name: .NET Core Desktop CI
+name: Build, Package and Import SQL
 
 on:
   push:
@@ -8,84 +8,77 @@ on:
 
 jobs:
   build:
+
     runs-on: windows-latest
-    strategy:
-      matrix:
-        configuration: [ Debug, Release ]
+    timeout-minutes: 60
 
     env:
       Solution_Name: TournoisPlanning.sln
-      Test_Project_Path: TournoisPlanning.Tests\TournoisPlanning.Tests.csproj
-      Wap_Project_Directory: WapProjTM
       Wap_Project_Path: WapProjTM\WapProjTM.wapproj
+      Sql_Script_Path: structure_tournoi.sql
+      Database_Name: tournoisManagement
+      Database_User: root
+      Database_Password: ${{ secrets.MYSQL_TM_PASSWORD }}
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup .NET
+    - name: Setup .NET 8
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: 8.0.x
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
       with:
-        vs-version: '17.9' # Version exacte du VS sur windows-latest
+        vs-version: '17.8.6'
 
-    - name: Install workload maui-windows
-      run: dotnet workload install maui-windows
+    - name: Restore NuGet packages
+      run: nuget restore ${{ env.Solution_Name }}
 
-    - name: Restore workloads
-      run: dotnet workload restore
+    - name: Build Solution
+      run: msbuild ${{ env.Solution_Name }} /p:Configuration=Release
 
-    - name: Restore solution
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=${{ matrix.configuration }}
-
-    - name: Run Unit Tests
-      run: dotnet test $env:Test_Project_Path
-
-    - name: Decode PFX Certificate
+    - name: Decode the PFX certificate
+      if: secrets.Base64_Encoded_Pfx
       run: |
-        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-        $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
-        New-Item -ItemType Directory -Force -Path $env:Wap_Project_Directory | Out-Null
-        [IO.File]::WriteAllBytes($certificatePath, $pfx_cert_byte)
+        $certBytes = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        [System.IO.File]::WriteAllBytes("GitHubActionsWorkflow.pfx", $certBytes)
 
-    - name: Build and Package App
+    - name: Build and Package WAP project
       run: |
-        msbuild $env:Wap_Project_Path `
-          /p:Configuration=${{ matrix.configuration }} `
+        msbuild ${{ env.Wap_Project_Path }} `
+          /p:Configuration=Release `
           /p:UapAppxPackageBuildMode=StoreUpload `
           /p:AppxBundle=Always `
-          /p:AppxBundlePlatforms="x86|x64" `
           /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx `
           /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
 
-    - name: Upload MSIX Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: MSIX Package
-        path: ${{ env.Wap_Project_Directory }}\AppPackages
-
-    - name: Clean up certificate
-      run: Remove-Item $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx -Force
-
-    - name: Setup MySQL
+    - name: Install MySQL Server
       run: |
         choco install mysql -y
-        net start mysql
-      shell: cmd
+        refreshenv
 
-    - name: Configure MySQL
+    - name: Start MySQL Service
       run: |
-        mysql -u root -e "CREATE USER 'adminTM'@'localhost' IDENTIFIED BY '${{ secrets.MYSQL_TM_PASSWORD }}';"
-        mysql -u root -e "CREATE DATABASE tournoisManagement;"
-        mysql -u root -e "GRANT ALL PRIVILEGES ON tournoisManagement.* TO 'adminTM'@'localhost';"
-        mysql -u root -e "FLUSH PRIVILEGES;"
-      shell: bash
+        net start mysql
+
+    - name: Create database
+      run: |
+        "CREATE DATABASE IF NOT EXISTS ${{ env.Database_Name }};" | & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u${{ env.Database_User }} -p${{ env.Database_Password }}
 
     - name: Import SQL Structure
       run: |
-        mysql -u adminTM -p${{ secrets.MYSQL_TM_PASSWORD }} tournoisManagement < structure_tournoi.sql
-      shell: bash
+        & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u${{ env.Database_User }} -p${{ env.Database_Password }} ${{ env.Database_Name }} < ${{ env.Sql_Script_Path }}
+
+    - name: Upload MSIX Package and SQL Script
+      uses: actions/upload-artifact@v4
+      with:
+        name: Build Outputs
+        path: |
+          WapProjTM\AppPackages
+          structure_tournoi.sql
+    - name: Run unit tests
+      run: dotnet test TournoisPlanning.Tests/TournoisPlanning.Tests.csproj --configuration Release
+
