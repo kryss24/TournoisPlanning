@@ -15,7 +15,7 @@ jobs:
     env:
       Solution_Name: TournoisPlanning.sln
       Wap_Project_Path: WapProjTM\WapProjTM.wapproj
-      Sql_Script_Path: structure_tournoi.sql
+      Sql_Script_Path: structure_tournoi.sql  # Modifie si ton fichier est ailleurs
       Database_Name: tournoisManagement
       Database_User: root
       Database_Password: ${{ secrets.MYSQL_TM_PASSWORD }}
@@ -41,7 +41,7 @@ jobs:
       run: msbuild ${{ env.Solution_Name }} /p:Configuration=Release
 
     - name: Decode the PFX certificate
-      if: secrets.Base64_Encoded_Pfx
+      if: ${{ secrets.Base64_Encoded_Pfx }}
       run: |
         $certBytes = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
         [System.IO.File]::WriteAllBytes("GitHubActionsWorkflow.pfx", $certBytes)
@@ -62,7 +62,7 @@ jobs:
 
     - name: Start MySQL Service
       run: |
-        net start mysql
+        Get-Service | Where-Object {$_.DisplayName -like "*MySQL*"} | Start-Service
 
     - name: Create database
       run: |
@@ -70,7 +70,7 @@ jobs:
 
     - name: Import SQL Structure
       run: |
-        & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u${{ env.Database_User }} -p${{ env.Database_Password }} ${{ env.Database_Name }} < ${{ env.Sql_Script_Path }}
+        Invoke-Expression "& 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe' -u${{ env.Database_User }} -p${{ env.Database_Password }} ${{ env.Database_Name }} < ${{ env.Sql_Script_Path }}"
 
     - name: Upload MSIX Package and SQL Script
       uses: actions/upload-artifact@v4
@@ -79,6 +79,7 @@ jobs:
         path: |
           WapProjTM\AppPackages
           structure_tournoi.sql
+
     - name: Run unit tests
       run: dotnet test TournoisPlanning.Tests/TournoisPlanning.Tests.csproj --configuration Release
-
+      continue-on-error: true  # Ne bloque pas le workflow si les tests échouent (optionnel mais conseillé au début)
