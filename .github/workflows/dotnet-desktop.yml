@@ -1,42 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
-# built on .NET Core.
-# To learn how to migrate your existing application to .NET Core,
-# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
-#
-# To configure this workflow:
-#
-# 1. Configure environment variables
-# GitHub sets default environment variables for every workflow run.
-# Replace the variables relative to your project in the "env" section below.
-#
-# 2. Signing
-# Generate a signing certificate in the Windows Application
-# Packaging Project or add an existing signing certificate to the project.
-# Next, use PowerShell to encode the .pfx file using Base64 encoding
-# by running the following Powershell script to generate the output string:
-#
-# $pfx_cert = Get-Content '.\SigningCertificate.pfx' -Encoding Byte
-# [System.Convert]::ToBase64String($pfx_cert) | Out-File 'SigningCertificate_Encoded.txt'
-#
-# Open the output file, SigningCertificate_Encoded.txt, and copy the
-# string inside. Then, add the string to the repo as a GitHub secret
-# and name it "Base64_Encoded_Pfx."
-# For more information on how to configure your signing certificate for
-# this workflow, refer to https://github.com/microsoft/github-actions-for-desktop-apps#signing
-#
-# Finally, add the signing certificate password to the repo as a secret and name it "Pfx_Key".
-# See "Build the Windows Application Packaging project" below to see how the secret is used.
-#
-# For more information on GitHub Actions, refer to https://github.com/features/actions
-# For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
-# refer to https://github.com/microsoft/github-actions-for-desktop-apps
-
-name: .NET Core Desktop
+name: .NET Core Desktop CI
 
 on:
   push:
@@ -45,76 +7,60 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
+    runs-on: windows-latest
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        configuration: [ Debug, Release ]
 
-    runs-on: windows-latest
-    timeout-minutes: 100
     env:
       Solution_Name: TournoisPlanning.sln
       Test_Project_Path: TournoisPlanning.Tests\TournoisPlanning.Tests.csproj
       Wap_Project_Directory: WapProjTM
-      Wap_Project_Path:  WapProjTM\WapProjTM.wapproj
+      Wap_Project_Path: WapProjTM\WapProjTM.wapproj
 
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
-    - name: Install .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: '9.0.x'
 
-    - name: Setup Visual Studio Build Tools with Desktop Bridge support
+    - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
       with:
-        vs-version: '[17.0,18.0]'
-    
-    - name: Install required Visual Studio workloads for WAP
-      run: |
-        choco install visualstudio2022buildtools --yes `
-          --execution-timeout=7200 `
-          --timeout=3600 `
-          --no-progress `
-          --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.ComponentGroup.UWP.VC --add Microsoft.VisualStudio.ComponentGroup.UWP.Support --includeRecommended --passive --norestart"
-      shell: powershell
+        vs-version: '17.9' # Version exacte du VS sur windows-latest
 
+    - name: Install workload maui-windows
+      run: dotnet workload install maui-windows
 
-
-    - name: Restore .NET Workloads
+    - name: Restore workloads
       run: dotnet workload restore
 
+    - name: Restore solution
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=${{ matrix.configuration }}
+
     - name: Run Unit Tests
-      run: dotnet test
+      run: dotnet test $env:Test_Project_Path
 
-    - name: Restore Solution
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
-
-    - name: Decode the PFX certificate
+    - name: Decode PFX Certificate
       run: |
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
         $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
         New-Item -ItemType Directory -Force -Path $env:Wap_Project_Directory | Out-Null
-        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+        [IO.File]::WriteAllBytes($certificatePath, $pfx_cert_byte)
 
-    - name: Build and Package App (MSIX)
-      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
-      env:
-        Appx_Bundle: Always
-        Appx_Bundle_Platforms: x86|x64
-        Appx_Package_Build_Mode: StoreUpload
-        Configuration: ${{ matrix.configuration }}
-
-    - name: Clean up certificate
-      run: Remove-Item -path $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx
+    - name: Build and Package App
+      run: |
+        msbuild $env:Wap_Project_Path `
+          /p:Configuration=${{ matrix.configuration }} `
+          /p:UapAppxPackageBuildMode=StoreUpload `
+          /p:AppxBundle=Always `
+          /p:AppxBundlePlatforms="x86|x64" `
+          /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx `
+          /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
 
     - name: Upload MSIX Package
       uses: actions/upload-artifact@v4
@@ -122,7 +68,10 @@ jobs:
         name: MSIX Package
         path: ${{ env.Wap_Project_Directory }}\AppPackages
 
-    - name: Install MySQL
+    - name: Clean up certificate
+      run: Remove-Item $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx -Force
+
+    - name: Setup MySQL
       run: |
         choco install mysql -y
         net start mysql
@@ -140,6 +89,3 @@ jobs:
       run: |
         mysql -u adminTM -p${{ secrets.MYSQL_TM_PASSWORD }} tournoisManagement < structure_tournoi.sql
       shell: bash
-
-
-          
