@@ -140,7 +140,7 @@ namespace TournoisPlanning.ViewModels
                             //TournoiId = TournoiId, // Supposant que TournoiId existe dans le ViewModel
                             Lieu = "À déterminer", // Par défaut
                             EstTermine = false,
-                            Statut = "Planifié",
+                            Statut = "À venir",
                             Date = DateTime.Now.AddDays(nouveauxMatchs.Count + 1), // Date temporaire
                             Round = 1 // Premier tour par défaut
                         };
