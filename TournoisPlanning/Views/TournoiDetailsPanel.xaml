@@ -4,23 +4,278 @@
              xmlns:local="clr-namespace:TournoisPlanning.Views"
              xmlns:vm="clr-namespace:TournoisPlanning.ViewModels">
 
-    <Grid Margin="10">
+    <UserControl.Resources>
+        <!--<converters:PercentToWidthConverter x:Key="PercentToWidthConverter"/>-->
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Foreground" Value="#333333"/>
+        </Style>
+        <Style x:Key="TeamLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="White" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Section 1: Match en cours / prochain / vainqueur -->
-        <Border BorderBrush="DarkSlateGray" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0 0 0 10">
-            <StackPanel>
-                <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding Tournoi.Nom}" Margin="0 0 0 8"/>
-                <ContentControl Content="{Binding MatchView}"/>
-            </StackPanel>
-        </Border>
+        <!-- Header with tournament name and navigation -->
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Section 2: Arbre ou Statistiques -->
-        <Border Grid.Row="1" BorderBrush="DarkSlateGray" BorderThickness="1" CornerRadius="8" Padding="10">
-            <ContentControl Content="{Binding SectionView}"/>
-        </Border>
+            <Button Grid.Column="0" Style="{StaticResource NavButtonStyle}" Command="{Binding GoBackCommand}" Click="Reload_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="←" FontSize="16" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                </StackPanel>
+            </Button>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding tournoi1.Nom}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Season:" Foreground="#666666" FontSize="12" Margin="0,0,5,0"/>
+                    <TextBlock Text="{Binding tournoi1.Saison}" Foreground="#666666" FontSize="12"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Content="View" Style="{StaticResource NavButtonStyle}" Click="ShowView"/>
+                <Button Content="Settings" Style="{StaticResource NavButtonStyle}" Click="ShowSettings"/>
+
+            </StackPanel>
+        </Grid>
+        <!--BEGIN-->
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <StackPanel.RenderTransform>
+                <TranslateTransform x:Name="PanelTranslate" />
+            </StackPanel.RenderTransform>
+
+            <!-- View Panel -->
+            <StackPanel Grid.Column="0" x:Name="viewPan">
+                <!-- Ton contenu View ici -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- Next match card section -->
+                    <Border Grid.Row="0" Margin="10" CornerRadius="8" Height="200">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#ffcad4" Offset="0"/>
+                                <GradientStop Color="#c7d2fe" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Match header -->
+                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" Margin="0,15,0,0" FontSize="14">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Next Match: {0} at {1}">
+                                        <Binding Path="NextMatch.Date" StringFormat="MMM dd, yyyy"/>
+                                        <Binding Path="NextMatch.Time"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+
+                            <!-- Teams and VS -->
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Team A -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Border Width="80" Height="80" Background="#EEEEEE" CornerRadius="4">
+                                        <TextBlock Text="A" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#CCCCCC"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding tournoi1.ProchainMatch.Equipe1.Nom}" Style="{StaticResource TeamLabelStyle}" Margin="0,10,0,0"/>
+                                </StackPanel>
+
+                                <!-- VS Text -->
+                                <TextBlock Grid.Column="1" Text="VS" FontSize="24" FontWeight="Bold" 
+                                                                        VerticalAlignment="Center" Margin="20,0"/>
+
+                                <!-- Team B -->
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Border Width="80" Height="80" Background="#EEEEEE" CornerRadius="4">
+                                        <TextBlock Text="B" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#CCCCCC"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding tournoi1.ProchainMatch.Equipe2.Nom}" Style="{StaticResource TeamLabelStyle}" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Start Match button -->
+                            <Button Grid.Row="2" Content="Start Match" Background="#8b5cf6" Foreground="White"
+                                                Width="120" Height="30" Margin="0,0,0,15"
+                                                Command="{Binding StartMatchCommand}"
+                                                HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Seasons and matches table -->
+                    <Grid Grid.Row="1" Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Seasons header with Generate Matches button -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="Seasons" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
+
+                            <Button Grid.Column="2" Content="Generate Matches" 
+                                        Command="{Binding GenerateMatchesCommand}"
+                                        Background="#8b5cf6" Foreground="White"
+                                        Padding="12,6" Margin="0,0,0,10"
+                                        ToolTip="Generate match pairs based on registered teams"/>
+                        </Grid>
+
+                        <!-- Matches table -->
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding tournoi1.Matches}" AutoGenerateColumns="False"
+                                                                      HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                                                                      BorderThickness="1" BorderBrush="#EEEEEE" Background="White"
+                                                                      RowHeaderWidth="0" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='{}{0:MMM dd, yyyy}'}" Width="120"/>
+                                <DataGridTextColumn Header="Team A" Binding="{Binding Equipe1.Nom}" Width="1*"/>
+                                <DataGridTextColumn Header="Score" Binding="{Binding Score}" Width="80">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Team B" Binding="{Binding Equipe2.Nom}" Width="1*"/>
+                                <DataGridTextColumn Header="Venue" Binding="{Binding Lieu}" Width="1*"/>
+                            </DataGrid.Columns>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="Height" Value="35"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+                        </DataGrid>
+                    </Grid>
+                    <!-- Ex: le contenu actuel du UserControl -->
+                </Grid>
+            </StackPanel>
+
+            <!-- Settings Panel -->
+            <StackPanel Grid.Column="1" x:Name="settingsPan" Background="#f3f4f6" Visibility="Collapsed">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform x:Name="SettingsTranslate"/>
+                </StackPanel.RenderTransform>
+                <TextBlock Text="Settings" FontSize="24" Margin="20"/>
+                <!-- Ajoute ici ton contenu de settings -->
+                <Grid Background="White" Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Equipes -->
+                    <GroupBox Header="Current Teams" Grid.Column="0" Margin="10" FontWeight="Bold">
+                        <StackPanel>
+                            <ItemsControl ItemsSource="{Binding Equipes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <RadioButton Content="{Binding Nom }" GroupName="Equipes"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="Add/Remove Teams" Width="150" Margin="0,10,0,0" Click="AddEquipe_Click"/>
+                            <!--Command="{Binding EditTeamsCommand}"-->
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Paramètres Tournoi -->
+                    <GroupBox Header="Tournament Settings" Grid.Column="1" Margin="10" FontWeight="Bold">
+                        <StackPanel>
+
+                            <!-- Type de tournoi -->
+                            <TextBlock Text="Tournament Type" Margin="0,5"/>
+                            <ComboBox ItemsSource="{Binding tournoi1.Type}" SelectedItem="{Binding SelectedTypeTournoi}" Margin="0,0,0,10"/>
+
+                            <!-- Mode de planification -->
+                            <TextBlock Text="Scheduling Mode" Margin="0,5"/>
+                            <ComboBox ItemsSource="{Binding ModesPlanification}" SelectedItem="{Binding SelectedModePlanification}" Margin="0,0,0,10"/>
+
+                            <!-- Auto Schedule -->
+                            <CheckBox Content="Auto Schedule Matches" IsChecked="{Binding AutoPlanification}" Margin="0,5">
+                                <CheckBox.ToolTip>
+                                    Automatically schedule matches based on team availability.
+                                </CheckBox.ToolTip>
+                            </CheckBox>
+
+                            <!-- Nouvelle saison -->
+                            <CheckBox Content="Start New Season" IsChecked="{Binding NouvelleSaison}" Margin="0,5">
+                                <CheckBox.ToolTip>
+                                    This will archive the current season and start a new one.
+                                </CheckBox.ToolTip>
+                            </CheckBox>
+
+                            <!-- Generate Matches Button in Settings -->
+                            <Button Content="Generate Match Pairs" 
+                                        Command="{Binding GenerateMatchesCommand}" 
+                                        Background="#8b5cf6" Foreground="White"
+                                        Margin="0,10,0,0"
+                                        HorizontalAlignment="Left"
+                                        Padding="12,6"
+                                        ToolTip="Generate match pairs based on registered teams"/>
+
+                            <!-- Boutons -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                                <Button Content="Cancel" Command="{Binding AnnulerCommand}" Margin="0,0,10,0"/>
+                                <Button Content="Save Changes" Command="{Binding EnregistrerCommand}" Background="#8b5cf6" Foreground="White"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Calendrier -->
+                    <GroupBox Header="Schedule" Grid.Row="1" Grid.ColumnSpan="2" Margin="10" FontWeight="Bold">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="Calendar View" FontWeight="SemiBold" FontSize="14" Margin="0,10" />
+                            <TextBlock Text="A drag-and-drop calendar for match scheduling would be displayed here." 
+                           Foreground="Gray" FontSize="12" TextAlignment="Center" Margin="0,0,0,10"/>
+                            <Button Content="Open Calendar" Command="{Binding OpenCalendarCommand}" Width="140" Background="#8b5cf6" Foreground="White"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+
+        <!--END-->
+
     </Grid>
 </UserControl>

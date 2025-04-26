@@ -29,8 +29,10 @@ namespace TournoisPlanning
             int count = (int)db.VerifiedUser(txtUser.Text, txtPass.Password);
             if (count > 0)
             {
+                //db.CloseConnection();
                 this.Hide();
-                var dashboard = new Dashboard();
+                db.CloseConnection();
+                var dashboard = new Dashboard(db);
                 dashboard.Show();
             } else
             {
