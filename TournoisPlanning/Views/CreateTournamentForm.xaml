@@ -1,0 +1,167 @@
+﻿<UserControl x:Class="TournoisPlanning.Views.CreateTournamentForm"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TournoisPlanning.Views"
+             xmlns:vm="clr-namespace:TournoisPlanning.ViewModels">
+
+    <UserControl.Resources>
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+
+        <Style x:Key="SubHeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
+
+        <Style x:Key="FormControlStyle" TargetType="Control">
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Height" Value="36"/>
+        </Style>
+
+        <Style x:Key="FormTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource FormControlStyle}">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+        </Style>
+
+        <Style x:Key="FormComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource FormControlStyle}">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+        </Style>
+
+        <Style x:Key="FormDatePickerStyle" TargetType="DatePicker" BasedOn="{StaticResource FormControlStyle}">
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+        </Style>
+
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Margin" Value="10,0"/>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#8b5cf6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+        </Style>
+
+        <Style x:Key="OptionButtonStyle" TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Padding" Value="5,0,0,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="White">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Border Margin="20" BorderThickness="1" BorderBrush="#EEEEEE" MaxWidth="800">
+                <StackPanel Margin="30">
+                    <!-- Header Section -->
+                    <TextBlock Text="Create New Tournament" Style="{StaticResource HeaderTextStyle}"/>
+                    <TextBlock Text="Fill in the details to create a new tournament." Style="{StaticResource SubHeaderTextStyle}"/>
+
+                    <!-- Form Section -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left Column -->
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <!-- Tournament Name -->
+                            <TextBlock Text="Tournament Name" Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Nom, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <!-- Tournament Type -->
+                            <TextBlock Text="Tournament Type" Style="{StaticResource FormLabelStyle}"/>
+                            <StackPanel Orientation="Vertical" Margin="0,5,0,15">
+                                <TextBlock Text="Select type" Foreground="#666666" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="Knockout" Style="{StaticResource OptionButtonStyle}" GroupName="TournamentType" IsChecked="{Binding IsKnockoutType}"/>
+                                    <RadioButton Content="Poules" Style="{StaticResource OptionButtonStyle}" GroupName="TournamentType" IsChecked="{Binding IsPouleType}"/>
+                                    <RadioButton Content="Mixed" Style="{StaticResource OptionButtonStyle}" GroupName="TournamentType" IsChecked="{Binding IsMixedType}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Start Date -->
+                            <TextBlock Text="Start Date" Style="{StaticResource FormLabelStyle}"/>
+                            <DatePicker Style="{StaticResource FormDatePickerStyle}" SelectedDate="{Binding DateDebut}"/>
+
+                            <!-- Number of Teams -->
+                            <TextBlock Text="Number of Teams" Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding NombreEquipes, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <!-- Match Frequency -->
+                            <TextBlock Text="Match Frequency" Style="{StaticResource FormLabelStyle}"/>
+                            <StackPanel Orientation="Vertical" Margin="0,5,0,15">
+                                <TextBlock Text="Select frequency" Foreground="#666666" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="Daily" Style="{StaticResource OptionButtonStyle}" GroupName="MatchFrequency" IsChecked="{Binding IsDailyFrequency}"/>
+                                    <RadioButton Content="Weekly" Style="{StaticResource OptionButtonStyle}" GroupName="MatchFrequency" IsChecked="{Binding IsWeeklyFrequency}"/>
+                                    <RadioButton Content="Custom" Style="{StaticResource OptionButtonStyle}" GroupName="MatchFrequency" IsChecked="{Binding IsCustomFrequency}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Right Column -->
+                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                            <!-- Match Duration -->
+                            <TextBlock Text="Match Duration (minutes)" Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding DureeMatch, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <!-- Venue -->
+                            <TextBlock Text="Venue" Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Lieu, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <!-- Description -->
+                            <TextBlock Text="Description (Optional)" Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                                     BorderBrush="#DDDDDD" Padding="10,5" Margin="0,0,0,15"
+                                     Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="Provide additional details about the tournament." 
+                                       Foreground="#666666" FontSize="12" Margin="0,-10,0,15"/>
+
+                            <!-- Prize -->
+                            <TextBlock Text="Prize (Optional)" Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Style="{StaticResource FormTextBoxStyle}" Text="{Binding Prix, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <!-- Scheduling Mode -->
+                            <TextBlock Text="Scheduling Mode" Style="{StaticResource FormLabelStyle}"/>
+                            <StackPanel Orientation="Vertical" Margin="0,5,0,15">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="Manual" Style="{StaticResource OptionButtonStyle}" GroupName="SchedulingMode" IsChecked="{Binding IsManualScheduling}"/>
+                                    <RadioButton Content="Automatic" Style="{StaticResource OptionButtonStyle}" GroupName="SchedulingMode" IsChecked="{Binding IsAutomaticScheduling}"/>
+                                </StackPanel>
+                                <TextBlock Text="Automatic will generate a schedule based on the number of teams and frequency." 
+                                           Foreground="#666666" FontSize="12" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Button Section -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                        <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}" Command="{Binding AnnulerCommand}"/>
+                        <Button Content="Create Tournament" Style="{StaticResource PrimaryButtonStyle}" Command="{Binding CreerTournoiCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

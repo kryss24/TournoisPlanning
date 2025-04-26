@@ -15,6 +15,9 @@ using System.Windows.Shapes;
 using TournoisPlanning.ViewModels;
 using TournoisPlanning.Views;
 using TournoisPlanning.Models;
+using System.Collections.ObjectModel;
+using TournoisPlanning.Services;
+using TournoisPlanning.Config;
 
 namespace TournoisPlanning.Views
 {
@@ -24,9 +27,17 @@ namespace TournoisPlanning.Views
     public partial class ListeTournoisView : UserControl
     {
         public event Action<Tournoi>? TournoiSelected;
-        public ListeTournoisView()
+        public ObservableCollection<Tournoi> Tournois { get; set; }
+        private DBConn dBConn;
+        public ListeTournoisView(DBConn db)
         {
             InitializeComponent();
+            dBConn = db;
+
+        }
+        private void ListeTournoisView_Loaded(object sender, RoutedEventArgs e)
+        {
+            ChargerTournois();
         }
         private void VoirTournoi_Click(object sender, RoutedEventArgs e)
         {
@@ -37,7 +48,7 @@ namespace TournoisPlanning.Views
                 TournoiSelected?.Invoke(tournoi);
 
                 // Obtenez une instance du TournoiDetailsPanel
-                var tournoiDetailsPanel = new TournoiDetailsPanel();
+                var tournoiDetailsPanel = new TournoiDetailsPanel(dBConn);
 
                 // Affectez le DataContext pour lier les données du tournoi au contrôle
                 //tournoiDetailsPanel.DataContext = tournoi;
@@ -52,6 +63,27 @@ namespace TournoisPlanning.Views
                     dashboard.MainContentArea.Content = tournoiDetailsPanel;
                 }
             }
+        }
+        private void createTournois_Click(object sender, RoutedEventArgs e)
+        {
+            var parentWindow = Window.GetWindow(this);
+            if (parentWindow is Dashboard dashboard)
+            {
+                //tournoiDetailsPanel.SetTournoi(tournoi);    
+                dashboard.MainContentArea.Content = new CreateTournamentForm();
+            }
+        }
+        private void ChargerTournois()
+        {
+            //var tournoiService = ServiceLocator.GetService<ITournoiService>();
+            //var tournoisDepuisBd = tournoiService.ObtenirTousTournois();
+
+            //Tournois.Clear();
+            //foreach (var tournoi in tournoisDepuisBd)
+            //{
+            //    tournoi.InitialiserProchainMatch();
+            //    Tournois.Add(tournoi);
+            //}
         }
 
     }

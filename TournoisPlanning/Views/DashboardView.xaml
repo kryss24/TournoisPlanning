@@ -24,7 +24,7 @@
                                     <TextBlock Text="Équipes : {Binding NombreEquipes}"/>
                                     <TextBlock Text="Statut : {Binding Statut}"/>
                                     <Button Content="Voir détails" Margin="0,5,0,0" HorizontalAlignment="Left"
-                                        Click="VoirDetails_Click"/>
+                                        />
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
