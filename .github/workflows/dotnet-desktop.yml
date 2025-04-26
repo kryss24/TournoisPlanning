@@ -19,6 +19,7 @@ jobs:
       Database_Name: tournoisManagement
       Database_User: root
       Database_Password: ${{ secrets.MYSQL_TM_PASSWORD }}
+      Secure_Pfx: ${{ secrets.Base64_Encoded_Pfx }}
 
     steps:
     - name: Checkout code
@@ -41,7 +42,7 @@ jobs:
       run: msbuild ${{ env.Solution_Name }} /p:Configuration=Release
 
     - name: Decode the PFX certificate
-      if: ${{ secrets.Base64_Encoded_Pfx }}
+      if: ${{ env.Secure_Pfx }}
       run: |
         $certBytes = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
         [System.IO.File]::WriteAllBytes("GitHubActionsWorkflow.pfx", $certBytes)
