@@ -56,7 +56,10 @@ namespace TournoisPlanning
 
             private void Calandrier_Click(object sender, RoutedEventArgs e)
             {
-                //MainContentArea.Content = new GestionEquipesView();
+                //MainContentArea.Content = new ListeTournoisView();
+                var calander = new calandrier();
+                //tournoisListView.TournoiSelected += AfficherDetailsTournoi;
+                MainContentArea.Content = calander;
             }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

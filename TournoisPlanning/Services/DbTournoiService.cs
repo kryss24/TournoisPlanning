@@ -178,7 +178,7 @@ namespace TournoisPlanning.Services
             }
         }
 
-        private List<Match> ObtenirMatchsPourTournoi(int tournoiId)
+        public List<Match> ObtenirMatchsPourTournoi(int tournoiId)
         {
             var matchs = new List<Match>();
 

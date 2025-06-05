@@ -14,6 +14,7 @@ namespace TournoisPlanning.Services
         void ModifierTournoi(Tournoi tournoi);
         void SupprimerTournoi(int id);
         void RefreshTournaments();
+        List<Match> ObtenirMatchsPourTournoi(int tournoiId);
     }
 
     // Interface pour le service de navigation

@@ -154,7 +154,13 @@ namespace TournoisPlanning.Services
         {
             TournamentsChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        public List<Match> ObtenirMatchsPourTournoi(int tournoiId)
+        {
+            return new List<Match>();
+        }
     }
+
 
     // Implémentation basique du service de navigation
     public class NavigationService : INavigationService

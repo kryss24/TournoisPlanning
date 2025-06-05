@@ -24,7 +24,7 @@ namespace TournoisPlanning.Models
         public int Round { get; set; } // 1 pour premier tour, 2 pour quart, etc.
         public string Statut { get; set; } // Exemple : "En cours", "Terminé"
         public string Score => $"{ScoreEquipe1} - {ScoreEquipe2}";
-        public DateTime? Date { get; set; }
+        public DateTime Date { get; set; }
     }
 
 }
